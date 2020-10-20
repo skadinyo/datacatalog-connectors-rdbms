@@ -16,8 +16,6 @@
 
 import logging
 import uuid
-import pprint
-import json
 
 from google.datacatalog_connectors.commons.cleanup \
     import datacatalog_metadata_cleaner
@@ -86,8 +84,6 @@ class DataCatalogSynchronizer:
             query=self.__query,
             csv_path=self.__csv_path,
             user_config=self.__user_config)
-        print('DEBUG')
-        print(metadata)
         metadata = self._enrich_metadata(metadata)
         
         self.__metadata_definition = self._enrich_metadata_definition()
@@ -95,8 +91,6 @@ class DataCatalogSynchronizer:
         self._log_metadata(metadata)
         logging.info('\n\n==============Prepare metadata===============')
         tag_templates_dict = self.__create_tag_templates()
-        print('DEBUG')
-        print(tag_templates_dict)
         prepared_entries = self.__prepare_datacatalog_entries(
             metadata, tag_templates_dict)
         
