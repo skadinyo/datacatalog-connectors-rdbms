@@ -31,11 +31,12 @@ class MetadataScraper:
     def get_metadata(self,
                      metadata_definition,
                      connection_args=None,
+                     external_connection_args=None,
                      query=None,
                      csv_path=None,
                      user_config=None):
         dataframe = self._get_metadata_as_dataframe(metadata_definition,
-                                                    connection_args, query,
+                                                    connection_args, external_connection_args, query,
                                                     csv_path, user_config)
 
         return MetadataNormalizer.to_metadata_dict(dataframe,
@@ -44,9 +45,11 @@ class MetadataScraper:
     def _get_metadata_as_dataframe(self,
                                    metadata_definition,
                                    connection_args=None,
+                                   external_connection_args=None,
                                    query=None,
                                    csv_path=None,
                                    user_config=None):
+        
         if csv_path:
             logging.info('Scrapping metadata from csv path: "%s"', csv_path)
             dataframe = self._get_metadata_from_csv(csv_path)
@@ -61,7 +64,7 @@ class MetadataScraper:
             logging.info('Scrapping additional metadata from connection_args,'
                          'if configured')
             dataframe = self._enrich_metadata_based_on_user_config(
-                user_config, dataframe, connection_args, metadata_definition)
+                user_config, dataframe, connection_args, external_connection_args, metadata_definition)
 
         return dataframe
 
@@ -90,9 +93,7 @@ class MetadataScraper:
     def _create_dataframe(self, rows):
         return pd.DataFrame(rows)
 
-    def _enrich_metadata_based_on_user_config(self, user_config,
-                                              base_dataframe, connection_args,
-                                              metadata_definition):
+    def _enrich_metadata_based_on_user_config(self, user_config, base_dataframe, connection_args, external_connection_args, metadata_definition):
         enriched_dataframe = base_dataframe
 
         if user_config.refresh_metadata_tables:
@@ -114,13 +115,17 @@ class MetadataScraper:
             logging.info(
                 'Scraping metadata according to configuration file: {}'.format(
                     optional_metadata))
-            enriched_dataframe = \
+            additional_dataframe = \
                 self._get_optional_metadata_from_rdbms_connection(
                     connection_args, optional_queries, base_dataframe,
                     metadata_definition)
-
+            
+            external_dataframe = self._get_external_metadata(external_connection_args)
+            enriched_dataframe = self._get_merged_dataframe_left(additional_dataframe, external_dataframe, metadata_definition)
+            enriched_dataframe['index_list'] = enriched_dataframe['index_list'].fillna('')
+            enriched_dataframe['replication'] = enriched_dataframe['replication'].fillna(False)
         enrich_metadata_dict = user_config.get_enrich_metadata_dict()
-
+        
         if enrich_metadata_dict:
             metadata_enricher = self._get_metadata_enricher()(
                 metadata_definition, enrich_metadata_dict)
@@ -186,12 +191,52 @@ class MetadataScraper:
             if con:
                 con.close()
 
+    def _get_external_metadata(self, external_connection_args):
+        # import at the method level, because this flow is kinda conditional
+        con = None
+        from psycopg2 import connect
+        try:
+            con = connect(database=external_connection_args['database'],
+                          host=external_connection_args['host'],
+                          port=5432,
+                          user=external_connection_args['user'],
+                          password=external_connection_args['password'])
+            cur = con.cursor()
+            # TODO add it from file
+            # TODO add db for the merger
+            query = 'SELECT stb.source_table_name as table_name, stb.enabled as replication FROM public.slave_to_bq stb LEFT JOIN public.database_connection dc ON stb.db_id = dc.db_id WHERE dc.db_name = %(dbname)s;'
+            cur.execute(query, {'dbname': 'dvdrental'})
+            rows = cur.fetchall()
+            dt_frame = self._create_dataframe(rows)
+            dt_frame.columns = [
+                item[0].lower() for item in cur.description
+            ]
+            # Hack
+            dt_frame['schema_name'] = 'public'
+            return dt_frame
+        except:
+            logging.error('Error in getting external metadata')
+            raise
+        finally:
+            if con:
+                con.close()
+
     def _get_merged_dataframe(self, old_df, new_df, metadata_definition):
         table_name_col = metadata_definition['table_def']['name']
         table_container_mame_col = metadata_definition['table_container_def'][
             'name']
         dataframe = pd.merge(old_df,
                              new_df,
+                             on=[table_container_mame_col, table_name_col])
+        return dataframe
+
+    def _get_merged_dataframe_left(self, old_df, new_df, metadata_definition):
+        table_name_col = metadata_definition['table_def']['name']
+        table_container_mame_col = metadata_definition['table_container_def'][
+            'name']
+        dataframe = pd.merge(old_df,
+                             new_df,
+                             how='left',
                              on=[table_container_mame_col, table_name_col])
         return dataframe
 

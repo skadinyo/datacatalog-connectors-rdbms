@@ -17,6 +17,7 @@
 import argparse
 import os
 import sys
+import pandas as pd
 
 from .scrape import metadata_scraper
 
@@ -40,9 +41,12 @@ class PostgreSQL2DatacatalogCli(datacatalog_cli.DatacatalogCli):
             'user': args.postgresql_user,
             'pass': args.postgresql_pass
         }
-
+    
     def _get_entry_group_id(self, args):
-        return args.datacatalog_entry_group_id or 'postgresql'
+        return args.datacatalog_entry_group_id or args.postgresql_database
+
+    def _get_tag_template_id(self, args):
+        return args.datacatalog_tag_template_id or 'postgresql'
 
     def _get_metadata_definition_path(self):
         return os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -67,6 +71,9 @@ class PostgreSQL2DatacatalogCli(datacatalog_cli.DatacatalogCli):
         parser.add_argument('--datacatalog-entry-group-id',
                             help='Entry group ID to be used for your Google '
                             'Cloud Datacatalog')
+        parser.add_argument('--datacatalog-tag-template-id',
+                            help='Template Tag ID to be used for your Google '
+                            'Cloud Datacatalog')
         parser.add_argument(
             '--postgresql-host',
             help='Your postgresql server host, this is required even'
@@ -82,6 +89,17 @@ class PostgreSQL2DatacatalogCli(datacatalog_cli.DatacatalogCli):
                             help='Your postgresql credentials password')
         parser.add_argument('--postgresql-database',
                             help='Your postgresql database name')
+
+        parser.add_argument('--external-postgresql-host',
+                            help='Your external-postgresql server')
+        parser.add_argument('--external-postgresql-user',
+                            help='Your external-postgresql credentials user')
+        parser.add_argument('--external-postgresql-password',
+                            help='Your external-postgresql credentials password')
+        parser.add_argument('--external-postgresql-database',
+                            help='Your external-postgresql database')
+
+
         parser.add_argument(
             '--raw-metadata-csv',
             help='Your raw metadata as a csv file, '
@@ -99,4 +117,5 @@ class PostgreSQL2DatacatalogCli(datacatalog_cli.DatacatalogCli):
 
 def main():
     argv = sys.argv
+            
     PostgreSQL2DatacatalogCli().run(argv[1:] if len(argv) > 0 else argv)

@@ -44,21 +44,25 @@ class DataCatalogSynchronizer:
                  project_id,
                  location_id,
                  entry_group_id,
+                 tag_template_id,
                  rbms_host,
                  metadata_definition,
                  metadata_scraper,
                  connection_args=None,
+                 external_connection_args=None,
                  query=None,
                  csv_path=None,
                  enable_monitoring=None,
                  user_config=None):
         self.__entry_group_id = entry_group_id
+        self.__tag_template_id = tag_template_id
         self.__metadata_definition = metadata_definition
         self.__metadata_scraper = metadata_scraper
         self.__rbms_host = rbms_host
         self.__project_id = project_id
         self.__location_id = location_id
         self.__connection_args = connection_args
+        self.__external_connection_args = external_connection_args
         self.__query = query
         self.__csv_path = csv_path
         self.__user_config = user_config
@@ -72,29 +76,24 @@ class DataCatalogSynchronizer:
         :return: task_id
         """
         self._before_run()
-
         logging.info('\n\n==============Scrape metadata===============')
-
         metadata = self.__metadata_scraper().get_metadata(
             self.__metadata_definition,
             connection_args=self.__connection_args,
+            external_connection_args=self.__external_connection_args,
             query=self.__query,
             csv_path=self.__csv_path,
             user_config=self.__user_config)
-
         metadata = self._enrich_metadata(metadata)
-
+        
         self.__metadata_definition = self._enrich_metadata_definition()
-
+        
         self._log_metadata(metadata)
-
         logging.info('\n\n==============Prepare metadata===============')
-
         tag_templates_dict = self.__create_tag_templates()
-
         prepared_entries = self.__prepare_datacatalog_entries(
             metadata, tag_templates_dict)
-
+        
         self._log_entries(prepared_entries)
 
         logging.info('\n==============Ingest metadata===============')
@@ -153,7 +152,7 @@ class DataCatalogSynchronizer:
     # Create factories
     def __create_assembled_entry_factory(self, tag_templates_dict):
         return self._get_assembled_entry_factory()(
-            self.__entry_group_id, self.__metadata_definition,
+            self.__entry_group_id, self.__tag_template_id, self.__metadata_definition,
             self.__create_entry_factory(), self.__create_tag_factory(),
             tag_templates_dict)
 
@@ -168,7 +167,7 @@ class DataCatalogSynchronizer:
 
     def __create_tag_templates(self):
         tag_template_factory = self._get_tag_template_factory()(
-            self.__project_id, self.__location_id, self.__entry_group_id,
+            self.__project_id, self.__location_id, self.__tag_template_id,
             self.__metadata_definition)
 
         schema_tag_template_id, schema_tag_template = \
@@ -177,11 +176,10 @@ class DataCatalogSynchronizer:
 
         table_tag_template_id, table_tag_template = \
             tag_template_factory.make_tag_template_for_table_metadata()
-
+        
         tag_templates_dict = \
             {schema_tag_template_id: schema_tag_template,
              table_tag_template_id: table_tag_template}
-
         return tag_templates_dict
 
     # Begin extension methods
