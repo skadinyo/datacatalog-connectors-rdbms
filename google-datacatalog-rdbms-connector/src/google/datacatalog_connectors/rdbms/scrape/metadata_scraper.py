@@ -205,6 +205,8 @@ class MetadataScraper:
             # TODO add it from file
             # TODO add db for the merger
             query = 'SELECT stb.source_table_name as table_name, stb.enabled as replication FROM public.slave_to_bq stb LEFT JOIN public.database_connection dc ON stb.db_id = dc.db_id WHERE dc.db_name = %(dbname)s;'
+            print('DEBUG')
+            print({'dbname': connection_args['database']})
             cur.execute(query, {'dbname': connection_args['database']})
             rows = cur.fetchall()
             dt_frame = self._create_dataframe(rows)
