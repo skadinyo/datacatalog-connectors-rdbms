@@ -120,7 +120,7 @@ class MetadataScraper:
                     connection_args, optional_queries, base_dataframe,
                     metadata_definition)
             
-            external_dataframe = self._get_external_metadata(external_connection_args)
+            external_dataframe = self._get_external_metadata(external_connection_args, connection_args)
             enriched_dataframe = self._get_merged_dataframe_left(additional_dataframe, external_dataframe, metadata_definition)
             enriched_dataframe['index_list'] = enriched_dataframe['index_list'].fillna('')
             enriched_dataframe['replication'] = enriched_dataframe['replication'].fillna(False)
@@ -191,7 +191,7 @@ class MetadataScraper:
             if con:
                 con.close()
 
-    def _get_external_metadata(self, external_connection_args):
+    def _get_external_metadata(self, external_connection_args, connection_args):
         # import at the method level, because this flow is kinda conditional
         con = None
         from psycopg2 import connect
@@ -205,7 +205,7 @@ class MetadataScraper:
             # TODO add it from file
             # TODO add db for the merger
             query = 'SELECT stb.source_table_name as table_name, stb.enabled as replication FROM public.slave_to_bq stb LEFT JOIN public.database_connection dc ON stb.db_id = dc.db_id WHERE dc.db_name = %(dbname)s;'
-            cur.execute(query, {'dbname': 'dvdrental'})
+            cur.execute(query, {'dbname': connection_args['database']})
             rows = cur.fetchall()
             dt_frame = self._create_dataframe(rows)
             dt_frame.columns = [
