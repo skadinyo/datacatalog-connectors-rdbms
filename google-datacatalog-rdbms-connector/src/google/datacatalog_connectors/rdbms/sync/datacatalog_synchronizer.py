@@ -85,15 +85,16 @@ class DataCatalogSynchronizer:
             csv_path=self.__csv_path,
             user_config=self.__user_config)
         metadata = self._enrich_metadata(metadata)
+        print(metadata)
         
         self.__metadata_definition = self._enrich_metadata_definition()
         
         self._log_metadata(metadata)
         logging.info('\n\n==============Prepare metadata===============')
         tag_templates_dict = self.__create_tag_templates()
+        print(tag_templates_dict)
         prepared_entries = self.__prepare_datacatalog_entries(
             metadata, tag_templates_dict)
-        
         self._log_entries(prepared_entries)
 
         logging.info('\n==============Ingest metadata===============')

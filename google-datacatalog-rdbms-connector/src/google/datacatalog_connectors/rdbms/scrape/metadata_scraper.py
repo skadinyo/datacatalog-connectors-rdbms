@@ -60,11 +60,10 @@ class MetadataScraper:
         else:
             raise Exception('Must supply either connection_args or csv_path')
 
-        if user_config:
-            logging.info('Scrapping additional metadata from connection_args,'
-                         'if configured')
-            dataframe = self._enrich_metadata_based_on_user_config(
-                user_config, dataframe, connection_args, external_connection_args, metadata_definition)
+        logging.info('Scrapping additional metadata from connection_args,'
+                     'if configured')
+        dataframe = self._enrich_metadata_based_on_user_config(
+            user_config, dataframe, connection_args, external_connection_args, metadata_definition)
 
         return dataframe
 
@@ -96,18 +95,18 @@ class MetadataScraper:
     def _enrich_metadata_based_on_user_config(self, user_config, base_dataframe, connection_args, external_connection_args, metadata_definition):
         enriched_dataframe = base_dataframe
 
-        if user_config.refresh_metadata_tables:
-            query_assembler = self._get_query_assembler()
-            exact_table_names = MetadataNormalizer.\
-                get_exact_table_names_from_dataframe(
-                    base_dataframe, metadata_definition)
-            refresh_queries = query_assembler.get_refresh_metadata_queries(
-                exact_table_names)
-            logging.info('Refreshing metadata')
-            self._refresh_metadata_from_rdbms_connection(
-                connection_args, refresh_queries)
+        # if user_config.refresh_metadata_tables:
+        #     query_assembler = self._get_query_assembler()
+        #     exact_table_names = MetadataNormalizer.\
+        #         get_exact_table_names_from_dataframe(
+        #             base_dataframe, metadata_definition)
+        #     refresh_queries = query_assembler.get_refresh_metadata_queries(
+        #         exact_table_names)
+        #     logging.info('Refreshing metadata')
+        #     self._refresh_metadata_from_rdbms_connection(
+        #         connection_args, refresh_queries)
 
-        if user_config.scrape_optional_metadata:
+        if True:
             query_assembler = self._get_query_assembler()
             optional_metadata = user_config.get_chosen_metadata_options()
             optional_queries = query_assembler.get_optional_queries(
@@ -115,11 +114,12 @@ class MetadataScraper:
             logging.info(
                 'Scraping metadata according to configuration file: {}'.format(
                     optional_metadata))
+            print('Get Extra Metadata')
             additional_dataframe = \
                 self._get_optional_metadata_from_rdbms_connection(
                     connection_args, optional_queries, base_dataframe,
                     metadata_definition)
-            
+            print('Get External Metadata')
             external_dataframe = self._get_external_metadata(external_connection_args, connection_args)
             enriched_dataframe = self._get_merged_dataframe_left(additional_dataframe, external_dataframe, metadata_definition)
             enriched_dataframe['index_list'] = enriched_dataframe['index_list'].fillna('')

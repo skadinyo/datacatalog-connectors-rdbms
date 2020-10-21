@@ -22,10 +22,10 @@ class QueryAssembler:
         Extend this method to add more optional queries
         """
         queries = dict()
-        if ROW_COUNT_OPTION in optional_metadata:
-            queries[ROW_COUNT_OPTION] = self._get_num_rows_query()
-        if INDEX_LIST_OPTION in optional_metadata:
-            queries[INDEX_LIST_OPTION] = self._get_index_list_query()
+        # if ROW_COUNT_OPTION in optional_metadata:
+        queries[ROW_COUNT_OPTION] = self._get_num_rows_query()
+        # if INDEX_LIST_OPTION in optional_metadata:
+        queries[INDEX_LIST_OPTION] = self._get_index_list_query()
         return queries
 
     def _get_num_rows_query(self):
