@@ -23,7 +23,7 @@ with open('README.md') as readme_file:
 
 setuptools.setup(
     name='google-datacatalog-postgresql-connector',
-    version='0.7.0-temp',
+    version='0.7.0',
     author='Google LLC',
     description=
     'Library for ingesting Postgresql metadata into Google Cloud Data Catalog',
@@ -37,7 +37,7 @@ setuptools.setup(
         ],
     },
     include_package_data=True,
-    install_requires=('psycopg2-binary', 'google-datacatalog-rdbms-connector @ git+ssh://github.com/skadinyo/datacatalog-connectors-rdbms.git@peter#subdirectory=google-datacatalog-rdbms-connector'),
+    install_requires=('psycopg2-binary', 'google-datacatalog-rdbms-connector @ git+ssh://github.com/skadinyo/datacatalog-connectors-rdbms.git#subdirectory=google-datacatalog-rdbms-connector'),
     setup_requires=('pytest-runner',),
     tests_require=('pytest-cov', 'google-datacatalog-connectors-commons-test'),
     classifiers=(
