@@ -122,13 +122,13 @@ class MetadataScraper:
             enriched_dataframe = self._get_merged_dataframe_left(additional_dataframe, external_dataframe, metadata_definition)
             enriched_dataframe['index_list'] = enriched_dataframe['index_list'].fillna('')
             enriched_dataframe['replication'] = enriched_dataframe['replication'].fillna(False)
-        enrich_metadata_dict = user_config.get_enrich_metadata_dict()
-        print('DEBUG')
-        print(enrich_metadata_dict)
-        if enrich_metadata_dict:
-            metadata_enricher = self._get_metadata_enricher()(
-                metadata_definition, enrich_metadata_dict)
-            enriched_dataframe = metadata_enricher.enrich(base_dataframe)
+        # enrich_metadata_dict = user_config.get_enrich_metadata_dict()
+        # print('DEBUG')
+        # print(enrich_metadata_dict)
+        # if enrich_metadata_dict:
+            # metadata_enricher = self._get_metadata_enricher()(
+            #     metadata_definition, None)
+            # enriched_dataframe = metadata_enricher.enrich(base_dataframe)
 
         return enriched_dataframe
 
