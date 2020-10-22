@@ -123,7 +123,8 @@ class MetadataScraper:
             enriched_dataframe['index_list'] = enriched_dataframe['index_list'].fillna('')
             enriched_dataframe['replication'] = enriched_dataframe['replication'].fillna(False)
         enrich_metadata_dict = user_config.get_enrich_metadata_dict()
-        
+        print('DEBUG')
+        print(enrich_metadata_dict)
         if enrich_metadata_dict:
             metadata_enricher = self._get_metadata_enricher()(
                 metadata_definition, enrich_metadata_dict)
