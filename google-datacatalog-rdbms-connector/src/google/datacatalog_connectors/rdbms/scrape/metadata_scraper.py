@@ -208,6 +208,8 @@ class MetadataScraper:
             cur.execute(query, {'dbname': connection_args['database']})
             rows = cur.fetchall()
             dt_frame = self._create_dataframe(rows)
+            print('DEBUG')
+            print(dt_frame)
             dt_frame.columns = [
                 item[0].lower() for item in cur.description
             ]
