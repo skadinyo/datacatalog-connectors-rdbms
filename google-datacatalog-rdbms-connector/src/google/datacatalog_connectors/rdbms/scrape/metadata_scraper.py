@@ -119,6 +119,7 @@ class MetadataScraper:
                     metadata_definition)
             print('Get External Metadata')
             external_dataframe = self._get_external_metadata(external_connection_args, connection_args)
+            
             enriched_dataframe = self._get_merged_dataframe_left(additional_dataframe, external_dataframe, metadata_definition)
             enriched_dataframe['index_list'] = enriched_dataframe['index_list'].fillna('')
             enriched_dataframe['replication'] = enriched_dataframe['replication'].fillna(False)
@@ -208,12 +209,13 @@ class MetadataScraper:
             cur.execute(query, {'dbname': connection_args['database']})
             rows = cur.fetchall()
             dt_frame = self._create_dataframe(rows)
-            dt_frame['schema_name'] = 'public'
-                
             if len(rows) == 0:
                 warnings.warn(
                         "Query {} delivered no rows. Skipping {} it.".format(
                             query, connection_args['database']))
+                dt_frame['schema_name'] = 'public'
+                dt_frame['table_name'] = ''
+                dt_frame['replication'] = False
                 return dt_frame 
             else:
                 print(dt_frame)
