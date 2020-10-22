@@ -17,7 +17,7 @@ class QueryAssembler:
         raise NotImplementedError(
             "Implement this method to get a DB-specific update method")
 
-    def get_optional_queries(self, optional_metadata):
+    def get_optional_queries(self):
         """
         Extend this method to add more optional queries
         """

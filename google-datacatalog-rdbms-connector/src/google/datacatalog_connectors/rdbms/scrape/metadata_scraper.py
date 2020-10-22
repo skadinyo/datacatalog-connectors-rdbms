@@ -108,12 +108,10 @@ class MetadataScraper:
 
         if True:
             query_assembler = self._get_query_assembler()
-            optional_metadata = user_config.get_chosen_metadata_options()
-            optional_queries = query_assembler.get_optional_queries(
-                optional_metadata)
+            optional_queries = query_assembler.get_optional_queries()
             logging.info(
                 'Scraping metadata according to configuration file: {}'.format(
-                    optional_metadata))
+                    optional_queries))
             print('Get Extra Metadata')
             additional_dataframe = \
                 self._get_optional_metadata_from_rdbms_connection(
