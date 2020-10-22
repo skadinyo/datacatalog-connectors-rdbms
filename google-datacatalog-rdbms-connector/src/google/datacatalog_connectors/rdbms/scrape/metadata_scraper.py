@@ -208,14 +208,19 @@ class MetadataScraper:
             cur.execute(query, {'dbname': connection_args['database']})
             rows = cur.fetchall()
             dt_frame = self._create_dataframe(rows)
-            print('DEBUG')
-            print(dt_frame)
-            dt_frame.columns = [
-                item[0].lower() for item in cur.description
-            ]
-            # Hack
-            dt_frame['schema_name'] = 'public'
-            return dt_frame
+            if len(rows) == 0:
+                warnings.warn(
+                        "Query {} delivered no rows. Skipping it.".format(
+                            query))
+                return dt_frame 
+            else:
+                print(dt_frame)
+                dt_frame.columns = [
+                    item[0].lower() for item in cur.description
+                ]
+                # Hack
+                dt_frame['schema_name'] = 'public'
+                return dt_frame
         except:
             logging.error('Error in getting external metadata')
             raise
