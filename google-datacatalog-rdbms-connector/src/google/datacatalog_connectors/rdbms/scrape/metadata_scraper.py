@@ -208,10 +208,12 @@ class MetadataScraper:
             cur.execute(query, {'dbname': connection_args['database']})
             rows = cur.fetchall()
             dt_frame = self._create_dataframe(rows)
+            dt_frame['schema_name'] = 'public'
+                
             if len(rows) == 0:
                 warnings.warn(
-                        "Query {} delivered no rows. Skipping it.".format(
-                            query))
+                        "Query {} delivered no rows. Skipping {} it.".format(
+                            query, connection_args['database']))
                 return dt_frame 
             else:
                 print(dt_frame)
