@@ -87,7 +87,8 @@ class DataCatalogEntryFactory(BaseEntryFactory):
 
         entry.user_specified_type = self.__metadata_definition['table_def'][
             'type']
-        entry.user_specified_system = self.__entry_group_id
+        entry.user_specified_system = self.__metadata_definition[
+            'database_type'] or self.__entry_group_id
 
         entry.display_name = self._format_display_name(table['name'])
 
