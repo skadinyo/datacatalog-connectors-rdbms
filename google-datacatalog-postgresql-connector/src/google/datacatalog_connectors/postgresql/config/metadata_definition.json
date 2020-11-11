@@ -1,4 +1,5 @@
 {
+    "database_type": "postgresql"
     "table_container_def": {
         "key": "schemas",
         "type": "schema",
