@@ -100,7 +100,11 @@ class DataCatalogSynchronizer:
         logging.info('\n==============Ingest metadata===============')
 
         self.__delete_obsolete_metadata(prepared_entries)
-
+        print('--------DEBUG--------')
+        print(prepared_entries)
+        print('--------DEBUG--------')
+        print(tag_templates_dict)
+        print('--------DEBUG--------')
         self.__ingest_metadata(prepared_entries, tag_templates_dict)
 
         logging.info('\n============End %s-to-datacatalog============',
