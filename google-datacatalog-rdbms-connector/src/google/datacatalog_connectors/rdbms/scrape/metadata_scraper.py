@@ -75,10 +75,11 @@ class MetadataScraper:
             cur.execute(query)
             rows = cur.fetchall()
             dataframe = self._create_dataframe(rows)
-
+            
             if len(rows) == 0:
                 raise Exception('RDBMS is empty, no metadata to extract.')
-
+            logging.info('=========== {} Row Count Metadata=========='.format(len(rows)))
+            
             dataframe.columns = [item[0].lower() for item in cur.description]
             return dataframe
         except:  # noqa:E722
