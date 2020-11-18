@@ -85,7 +85,8 @@ class DataCatalogSynchronizer:
             csv_path=self.__csv_path,
             user_config=self.__user_config)
         metadata = self._enrich_metadata(metadata)
-        print(metadata)
+        logging.info('\n\n==============Metadata===============')
+        logging.info(metadata)
         
         self.__metadata_definition = self._enrich_metadata_definition()
         
