@@ -93,7 +93,7 @@ class DataCatalogSynchronizer:
         self._log_metadata(metadata)
         logging.info('\n\n==============Prepare metadata===============')
         tag_templates_dict = self.__create_tag_templates()
-        print(tag_templates_dict)
+        logging.info(tag_templates_dict)
         prepared_entries = self.__prepare_datacatalog_entries(
             metadata, tag_templates_dict)
         self._log_entries(prepared_entries)
@@ -101,11 +101,11 @@ class DataCatalogSynchronizer:
         logging.info('\n==============Ingest metadata===============')
 
         self.__delete_obsolete_metadata(prepared_entries)
-        print('--------DEBUG--------')
-        print(prepared_entries)
-        print('--------DEBUG--------')
-        print(tag_templates_dict)
-        print('--------DEBUG--------')
+        logging.info('--------DEBUG--------')
+        logging.info(prepared_entries)
+        logging.info('--------DEBUG--------')
+        logging.info(tag_templates_dict)
+        logging.info('--------DEBUG--------')
         self.__ingest_metadata(prepared_entries, tag_templates_dict)
 
         logging.info('\n============End %s-to-datacatalog============',
