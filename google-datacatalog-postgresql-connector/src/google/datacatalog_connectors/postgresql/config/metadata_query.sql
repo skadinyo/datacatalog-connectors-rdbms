@@ -26,5 +26,6 @@ WHERE t.schemaname NOT IN ('pg_catalog',
                              'pgq',
                              'pgq_ext',
                              'pgq_node')
+AND NOT c.attisdropped
 ORDER BY t.tablename,
          c.attname;
