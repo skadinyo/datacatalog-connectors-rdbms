@@ -23,7 +23,7 @@ with open('README.md') as readme_file:
 
 setuptools.setup(
     name='google-datacatalog-postgresql-connector',
-    version='0.7.0+1',
+    version='0.7.0+2',
     author='Google LLC',
     description=
     'Library for ingesting Postgresql metadata into Google Cloud Data Catalog',
