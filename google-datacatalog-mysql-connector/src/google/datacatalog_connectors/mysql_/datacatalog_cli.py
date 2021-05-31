@@ -17,6 +17,7 @@
 import argparse
 import os
 import sys
+import pandas as pd
 
 from google.datacatalog_connectors.rdbms import \
     datacatalog_cli
@@ -43,6 +44,9 @@ class MySQL2DatacatalogCli(datacatalog_cli.DatacatalogCli):
     def _get_entry_group_id(self, args):
         return args.datacatalog_entry_group_id or 'mysql'
 
+    def _get_tag_template_id(self, args):
+        return args.datacatalog_tag_template_id or 'mysql'
+
     def _get_metadata_definition_path(self):
         return os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             'config/metadata_definition.json')
@@ -66,6 +70,18 @@ class MySQL2DatacatalogCli(datacatalog_cli.DatacatalogCli):
         parser.add_argument('--datacatalog-entry-group-id',
                             help='Entry group ID to be used for your Google '
                             'Cloud Datacatalog')
+        parser.add_argument('--datacatalog-tag-template-id',
+                            help='Template Tag ID to be used for your Google '
+                            'Cloud Datacatalog')
+        parser.add_argument('--external-postgresql-host',
+                            help='Your external-postgresql server')
+        parser.add_argument('--external-postgresql-user',
+                            help='Your external-postgresql credentials user')
+        parser.add_argument('--external-postgresql-password',
+                            help='Your external-postgresql credentials password')
+        parser.add_argument('--external-postgresql-database',
+                            help='Your external-postgresql database')
+
         parser.add_argument(
             '--mysql-host',
             help='Your mysql server host, this is required even'

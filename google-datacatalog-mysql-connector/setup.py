@@ -23,7 +23,7 @@ with open('README.md') as readme_file:
 
 setuptools.setup(
     name='google-datacatalog-mysql-connector',
-    version='0.7.0',
+    version='0.7.0+1',
     author='Google LLC',
     description=
     'Library for ingesting MySQL metadata into Google Cloud Data Catalog',
@@ -37,7 +37,7 @@ setuptools.setup(
         ],
     },
     include_package_data=True,
-    install_requires=('mysql-connector-python', 'google-datacatalog-rdbms-connector'),
+    install_requires=('mysql-connector-python', 'google-datacatalog-rdbms-connector @ git+https://github.com/skadinyo/datacatalog-connectors-rdbms.git#subdirectory=google-datacatalog-rdbms-connector'),
     setup_requires=('pytest-runner',),
     tests_require=('pytest-cov', 'google-datacatalog-connectors-commons-test'),
     classifiers=(

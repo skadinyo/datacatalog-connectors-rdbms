@@ -1,4 +1,5 @@
 {
+    "database_type": "mysql",
     "table_container_def": {
         "key": "databases",
         "type": "database",
@@ -28,6 +29,16 @@
             {
                 "source": "table_rows",
                 "target": "num_rows"
+            },
+
+            {
+                "source": "index_list",
+                "target": "index_list"
+            },
+
+            {
+                "source": "replication",
+                "target": "replication"
             },
 
             {

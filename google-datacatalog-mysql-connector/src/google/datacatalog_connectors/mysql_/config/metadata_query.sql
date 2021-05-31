@@ -15,7 +15,7 @@
 */
 
 SELECT  t.table_schema as database_name,
-        t.table_name, t.table_type,
+        t.table_name AS table_name,
         t.create_time, t.update_time,
         round((t.data_length+t.index_length) / (1024 * 1024), 3) as table_size_mb,
         c.column_name,
